@@ -7,22 +7,16 @@ module.exports = new Module(
             this.client = mongoDB.MongoClient;
             this.server = mongoDB.MongoServer;
 
-            this.cursor = null;
+            this.exec = function (callback) {
 
-            this.setCursor = function (cursor) {
-                this.cursor = cursor;
-                console.log('Cursor on.');
-            };
-
-            this.connect = function () {
                 this.client.connect(
                     config.protocol + "://" + config.host + ":" + config.port,
-                    function (err, cursor) {
+                    function (err, db) {
                         if (err) {
                             throw 'Error in mongodb connection!';
                         }
 
-                        this.setCursor(cursor);
+                        callback(db);
                     }.bind(this)
                 );
             };
