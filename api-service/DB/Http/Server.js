@@ -11,7 +11,7 @@ module.exports = new Module(
                     function (err, db) {
                         if (err) {
 
-                            response.end("DB connect error.");
+                            response.end("DB connect error - " + err);
                             return;
                         }
 
@@ -22,7 +22,11 @@ module.exports = new Module(
 
                         response.writeHeader(200, {"Content-Type" : "application/json"});
 
-                        responseHandler.getResponse(db, Request.parse(body), response.end.bind(response));
+                        try {
+                            responseHandler.getResponse(db, Request.parse(body), response.end.bind(response));
+                        } catch (e) {
+                            response.end("Error - " + e);
+                        }
                     }
                 );
             };
