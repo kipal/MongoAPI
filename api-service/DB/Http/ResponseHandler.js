@@ -13,7 +13,7 @@ module.exports = new Module(
                     var msg = "Not found '" + request['method'] + "' method!";
                     console.log(msg);
 
-                    return new Response().setBody(undefined, msg);
+                    responseEnd(JSON.stringify(msg));
                 }
 
                 this[request.method](dbHandler, responseEnd);
@@ -31,7 +31,44 @@ module.exports = new Module(
                        resp(JSON.stringify(db));
                    }
                );
-           }
+           };
+
+           this.serverStatus = function (dbHandler, resp) {
+               dbHandler.admin().serverStatus(
+                   function (err, db) {
+                       if (err) {
+                           resp("Error in serverStatus query!");
+
+                           return;
+                       }
+
+                       resp(JSON.stringify(db));
+                   }
+               );
+           };
+
+           this.collections = function (dbHandler, resp) {
+               dbHandler.db("test").collections(
+                       function (err, r) {
+                           if (err) {
+                               resp("Error in collections query!");
+
+                               return;
+                           }
+
+                           result = [];
+                           for (var i in r) {
+                               var tmpName = r[i].collectionName;
+                               if (tmpName) {
+                                   result.push(tmpName);
+                               }
+                           }
+
+                           resp(JSON.stringify(result));
+                       }
+               );
+           };
+
         }
 
         ResponseHandler.prototype             = BaseRespHandler;
