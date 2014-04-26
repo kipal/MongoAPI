@@ -16,10 +16,10 @@ module.exports = new Module(
                     responseEnd(JSON.stringify(msg));
                 }
 
-                this[request.method](dbHandler, responseEnd);
+                this[request.method](dbHandler, request.params, responseEnd);
            };
 
-           this.listDatabases = function (dbHandler, resp) {
+           this.listDatabases = function (dbHandler, request, resp) {
                dbHandler.admin().listDatabases(
                    function (err, db) {
                        if (err) {
@@ -33,7 +33,7 @@ module.exports = new Module(
                );
            };
 
-           this.serverStatus = function (dbHandler, resp) {
+           this.serverStatus = function (dbHandler, request, resp) {
                dbHandler.admin().serverStatus(
                    function (err, db) {
                        if (err) {
@@ -47,8 +47,8 @@ module.exports = new Module(
                );
            };
 
-           this.collections = function (dbHandler, resp) {
-               dbHandler.db("test").collections(
+           this.collections = function (dbHandler, param, resp) {
+               dbHandler.db(param.dbName).collections(
                        function (err, r) {
                            if (err) {
                                resp("Error in collections query!");
