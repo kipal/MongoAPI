@@ -69,6 +69,20 @@ module.exports = new Module(
                );
            };
 
+           this.findAll = function (dbHandler, param, resp) {
+               dbHandler.db(param.dbName).collection(param.collectionName).find().toArray(
+                       function (err, r) {
+                           if (err) {
+                               resp("Error in findAll query!");
+
+                               return;
+                           }
+
+                           resp(JSON.stringify(r));
+                       }
+               );
+           };
+
         }
 
         ResponseHandler.prototype             = BaseRespHandler;
