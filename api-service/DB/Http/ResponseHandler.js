@@ -5,6 +5,8 @@ module.exports = new Module(
 
             BaseRespHandler.call(this);
 
+            var ObjectID = require("mongodb").ObjectID;
+
             this.getResponse = function (dbHandler, request, responseEnd) {
                 if (
                     undefined === this[request.method]
@@ -83,6 +85,60 @@ module.exports = new Module(
                );
            };
 
+           this.removeById = function (dbHandler, param, resp) {
+               dbHandler.db(param.dbName).collection(param.collectionName).remove(
+                       {
+                           "_id" : ObjectID(param.id)
+                       },
+                       function (err, r) {
+                           if (err) {
+                               resp("Error in remove query! -" + err);
+
+                               return;
+                           }
+
+                           resp(JSON.stringify(r));
+                       }
+               );
+           };
+
+           this.updateById = function (dbHandler, param, resp) {
+               var id   = param.data._id;
+               var data = param.data;
+               delete data._id;
+
+               dbHandler.db(param.dbName).collection(param.collectionName).findAndModify(
+                       {
+                           "_id" : ObjectID(id)
+                       },
+                       {},
+                       data,
+                       function (err, r) {
+                           if (err) {
+                               resp("Error in updateById query! -" + err);
+
+                               return;
+                           }
+
+                           resp(JSON.stringify(r));
+                       }
+               );
+           };
+
+           this.save = function (dbHandler, param, resp) {
+               dbHandler.db(param.dbName).collection(param.collectionName).save(
+                       param.data,
+                       function (err, r) {
+                           if (err) {
+                               resp("Error in save query! -" + err);
+
+                               return;
+                           }
+
+                           resp(JSON.stringify(r));
+                       }
+               );
+           };
         }
 
         ResponseHandler.prototype             = BaseRespHandler;
