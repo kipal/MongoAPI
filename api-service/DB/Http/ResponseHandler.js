@@ -139,6 +139,20 @@ module.exports = new Module(
                        }
                );
            };
+
+           this.dropDB = function (dbHandler, param, resp) {
+               dbHandler.db(param.dbName).dropDatabase(
+                       function (err, r) {
+                           if (err) {
+                               resp("Error in dropDB query! -" + err);
+
+                               return;
+                           }
+
+                           resp(JSON.stringify(r));
+                       }
+               );
+           };
         }
 
         ResponseHandler.prototype             = BaseRespHandler;
