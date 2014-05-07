@@ -187,17 +187,16 @@ module.exports = new Module(
            };
 
            this.removeCollection = function (dbHandler, param, resp) {
-               dbHandler.db(param.dbName).dropCollection(
-                   param.collectionName,
-                   function (err, r) {
-                       if (err) {
-                           resp("Error in dropCollection query! -" + err);
+               dbHandler.db(param.dbName).collection(param.collectionName).drop(
+                       function (err, r) {
+                           if (err) {
+                               resp("Error in drop query! -" + err);
 
-                           return;
+                               return;
+                           }
+
+                           resp(JSON.stringify(r));
                        }
-
-                       resp(JSON.stringify(true));
-                   }
                );
            };
 
