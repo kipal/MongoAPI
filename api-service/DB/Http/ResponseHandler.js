@@ -169,6 +169,38 @@ module.exports = new Module(
                    }
                );
            };
+
+           this.addCollection = function (dbHandler, param, resp) {
+               dbHandler.db(param.dbName).createCollection(
+                   param.collectionName,
+                   {capped:true, size:10000, max:1000, w:1},
+                   function (err, r) {
+                       if (err) {
+                           resp("Error in addCollection query! -" + err);
+
+                           return;
+                       }
+
+                       resp(JSON.stringify(true));
+                   }
+               );
+           };
+
+           this.removeCollection = function (dbHandler, param, resp) {
+               dbHandler.db(param.dbName).dropCollection(
+                   param.collectionName,
+                   function (err, r) {
+                       if (err) {
+                           resp("Error in dropCollection query! -" + err);
+
+                           return;
+                       }
+
+                       resp(JSON.stringify(true));
+                   }
+               );
+           };
+
         }
 
         ResponseHandler.prototype             = BaseRespHandler;
