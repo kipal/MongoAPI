@@ -1,6 +1,7 @@
 {
     "name" : "MongoAPI",
     "dependencies": {
-        "contour-fw" : ">=0.0.6-dev"
+        "contour-fw" : ">=0.0.6-dev",
+        "mongodb" : ">=1.4.3"
     }
 }
