@@ -31,6 +31,7 @@ module.exports = new Module(
                        }
 
                        resp(JSON.stringify(db));
+                       dbHandler.close();
                    }
                );
            };
@@ -45,6 +46,7 @@ module.exports = new Module(
                        }
 
                        resp(JSON.stringify(db));
+                       dbHandler.close();
                    }
                );
            };
@@ -67,6 +69,7 @@ module.exports = new Module(
                            }
 
                            resp(JSON.stringify(result));
+                           dbHandler.close();
                        }
                );
            };
@@ -98,6 +101,7 @@ module.exports = new Module(
                            }
 
                            resp(JSON.stringify(r));
+                           dbHandler.close();
                        }
                );
            };
@@ -121,6 +125,7 @@ module.exports = new Module(
                            }
 
                            resp(JSON.stringify(r));
+                           dbHandler.close();
                        }
                );
            };
@@ -136,6 +141,7 @@ module.exports = new Module(
                            }
 
                            resp(JSON.stringify(r));
+                           dbHandler.close();
                        }
                );
            };
@@ -150,6 +156,7 @@ module.exports = new Module(
                            }
 
                            resp(JSON.stringify(r));
+                           dbHandler.close();
                        }
                );
            };
@@ -166,6 +173,7 @@ module.exports = new Module(
                        }
 
                        resp(JSON.stringify(true));
+                       dbHandler.close();
                    }
                );
            };
@@ -182,6 +190,7 @@ module.exports = new Module(
                        }
 
                        resp(JSON.stringify(true));
+                       dbHandler.close();
                    }
                );
            };
@@ -196,6 +205,7 @@ module.exports = new Module(
                            }
 
                            resp(JSON.stringify(r));
+                           dbHandler.close();
                        }
                );
            };
