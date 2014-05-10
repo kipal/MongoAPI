@@ -7,7 +7,7 @@ module.exports = new Module(
 
             var ObjectID = require("mongodb").ObjectID;
 
-            this.getResponse = function (dbHandler, request, responseEnd) {
+            this.getResponse = function (dbHandler, request, response) {
                 if (
                     undefined === this[request.method]
                     || !(this[request.method] instanceof Function)
@@ -18,44 +18,38 @@ module.exports = new Module(
                     responseEnd(JSON.stringify(msg));
                 }
 
-                this[request.method](dbHandler, request.params, responseEnd);
+                this[request.method](dbHandler, request.params, response);
+           };
+
+           var createResponse = function (result) {
+               return JSON.stringify({data : result});
+           };
+
+           var createErrorResponse = function (result) {
+               return JSON.stringify({error : result});
+           };
+
+           var responseFunction = function (err, result) {
+               if (err) {
+                   this.end(createErrorResponse(result));
+               }
+
+               this.end(createResponse(result));
            };
 
            this.listDatabases = function (dbHandler, request, resp) {
-               dbHandler.admin().listDatabases(
-                   function (err, db) {
-                       if (err) {
-                           resp("Error in listDatabases query!");
-
-                           return;
-                       }
-
-                       resp(JSON.stringify(db));
-                       dbHandler.close();
-                   }
-               );
+               dbHandler.admin().listDatabases(responseFunction.bind(resp));
            };
 
            this.serverStatus = function (dbHandler, request, resp) {
-               dbHandler.admin().serverStatus(
-                   function (err, db) {
-                       if (err) {
-                           resp("Error in serverStatus query!");
-
-                           return;
-                       }
-
-                       resp(JSON.stringify(db));
-                       dbHandler.close();
-                   }
-               );
+               dbHandler.admin().serverStatus(responseFunction.bind(resp));
            };
 
            this.collections = function (dbHandler, param, resp) {
                dbHandler.db(param.dbName).collections(
                        function (err, r) {
                            if (err) {
-                               resp("Error in collections query!");
+                               resp.end(createErrorResponse(err));
 
                                return;
                            }
@@ -68,24 +62,13 @@ module.exports = new Module(
                                }
                            }
 
-                           resp(JSON.stringify(result));
-                           dbHandler.close();
+                           resp.end(createResponse(result));
                        }
                );
            };
 
            this.findAll = function (dbHandler, param, resp) {
-               dbHandler.db(param.dbName).collection(param.collectionName).find().toArray(
-                       function (err, r) {
-                           if (err) {
-                               resp("Error in findAll query!");
-
-                               return;
-                           }
-
-                           resp(JSON.stringify(r));
-                       }
-               );
+               dbHandler.db(param.dbName).collection(param.collectionName).find().toArray(responseFunction.bind(resp));
            };
 
            this.removeById = function (dbHandler, param, resp) {
@@ -95,13 +78,13 @@ module.exports = new Module(
                        },
                        function (err, r) {
                            if (err) {
-                               resp("Error in remove query! -" + err);
+                               resp.end(createErrorResponse(err));
 
                                return;
                            }
 
-                           resp(JSON.stringify(r));
-                           dbHandler.close();
+                           resp.end(createResponse(r));
+
                        }
                );
            };
@@ -119,13 +102,13 @@ module.exports = new Module(
                        data,
                        function (err, r) {
                            if (err) {
-                               resp("Error in updateById query! -" + err);
+                               resp.end(createErrorResponse(err));
 
                                return;
                            }
 
-                           resp(JSON.stringify(r));
-                           dbHandler.close();
+                           resp.end(createResponse(r));
+
                        }
                );
            };
@@ -135,30 +118,19 @@ module.exports = new Module(
                        param.data,
                        function (err, r) {
                            if (err) {
-                               resp("Error in save query! -" + err);
+                               resp.end(createErrorResponse(err));
 
                                return;
                            }
 
-                           resp(JSON.stringify(r));
-                           dbHandler.close();
+                           resp.end(createResponse(r));
+
                        }
                );
            };
 
            this.dropDB = function (dbHandler, param, resp) {
-               dbHandler.db(param.dbName).dropDatabase(
-                       function (err, r) {
-                           if (err) {
-                               resp("Error in dropDB query! -" + err);
-
-                               return;
-                           }
-
-                           resp(JSON.stringify(r));
-                           dbHandler.close();
-                       }
-               );
+               dbHandler.db(param.dbName).dropDatabase(responseFunction.bind(resp));
            };
 
            this.addDB = function (dbHandler, param, resp) {
@@ -167,13 +139,13 @@ module.exports = new Module(
                    {capped:true, size:10000, max:1000, w:1},
                    function (err, r) {
                        if (err) {
-                           resp("Error in addDB query! -" + err);
+                           resp.end(createErrorResponse(err));
 
                            return;
                        }
 
-                       resp(JSON.stringify(true));
-                       dbHandler.close();
+                       resp.end(createResponse(true));
+
                    }
                );
            };
@@ -184,30 +156,19 @@ module.exports = new Module(
                    {capped:false, size:10000, max:1000, w:1},
                    function (err, r) {
                        if (err) {
-                           resp("Error in addCollection query! -" + err);
+                           resp.end(createErrorResponse(err));
 
                            return;
                        }
 
-                       resp(JSON.stringify(true));
-                       dbHandler.close();
+                       resp.end(createResponse(true));
+
                    }
                );
            };
 
            this.removeCollection = function (dbHandler, param, resp) {
-               dbHandler.db(param.dbName).collection(param.collectionName).drop(
-                       function (err, r) {
-                           if (err) {
-                               resp("Error in drop query! -" + err);
-
-                               return;
-                           }
-
-                           resp(JSON.stringify(r));
-                           dbHandler.close();
-                       }
-               );
+               dbHandler.db(param.dbName).collection(param.collectionName).drop(responseFunction.bind(resp));
            };
 
         }
