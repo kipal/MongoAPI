@@ -4,23 +4,47 @@ module.exports = new Module(
         function Server(port, config, responseHandler) {
             AbstractServer.call(this, port, responseHandler);
 
-            var mongoDB   = require("mongodb").MongoClient;
-            var dbHandler = null;
-            mongoDB.connect(
-                config.protocol + "://" + config.host + ":" + config.port,
-                function (err, db) {
-                    if (err) {
-                        console.log(err);
-                        return;
+            var mongoDB    = require("mongodb").MongoClient;
+            var dbHandler  = null;
+            var connectErr = null;
+
+            var mongoConnect = function () {
+                mongoDB.connect(
+                    config.protocol + "://" + config.host + ":" + config.port,
+                    {
+                        server : {
+                            "auto_reconnect" : true
+                        }
+                    },
+                    function (err, db) {
+                        if (err) {
+
+                            console.log(err);
+                            connectErr = err;
+
+                            return;
+                        }
+
+                        connectErr = null;
+                        dbHandler  = db;
                     }
+                );
+            };
 
-                    dbHandler = db;
+            mongoConnect();
+
+
+            var getDBHandler = function () {
+                if (dbHandler) {
+
+                    return dbHandler;
                 }
-            );
 
+                if (connectErr) {
+                    mongoConnect();
+                    throw 'Connection interrupted!';
+                }
 
-            this.getDBHandler = function () {
-                return dbHandler;
             };
 
             this.handleRequest = function (request, response) {
@@ -37,12 +61,20 @@ module.exports = new Module(
                     "end",
                     function () {
                         try {
+                            var dbHandler = getDBHandler();
+
                             responseHandler.getResponse(dbHandler, Request.parse(body), response);
                         } catch (e) {
+                            console.log("itt");
                             response.end(JSON.stringify({error : e, request : body}));
                         }
-                    }.bind(this)
+                    }
                 );
+
+                response.setTimeout(300, function () {
+                    response.end(JSON.stringify({error : "Connection timeout!", request : body}));
+                    mongoConnect();
+                });
             };
         }
 
