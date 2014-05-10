@@ -12,14 +12,4 @@ var serverConfig = require(__dirname + '/config/NodeMongoAdmin-CONFIG/server-con
 var dbConfig     = require(__dirname + '/config/db-config.js');
 
 
-
-var bootStrap = new Service.Core.Bootstrap();
-bootStrap.setCurrentServer(
-    new Service.DB.Http.Server(
-        serverConfig.api.mongodb.port,
-        dbConfig.primary,
-        new Service.DB.Http.ResponseHandler()
-    )
-);
-
-bootStrap.run();
+new Service.Core.Bootstrap(serverConfig, dbConfig).run();

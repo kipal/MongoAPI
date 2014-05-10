@@ -1,8 +1,16 @@
 module.exports = new Module(
-    function (ContourBootstrap, BodyWidget, HeadWidget) {
+    function (ContourBootstrap, Server, ResponseHandler) {
 
-        function Bootstrap() {
+        function Bootstrap(serverConfig, dbConfig) {
             ContourBootstrap.call(this);
+
+            this.setCurrentServer(
+                new Server(
+                    serverConfig.api.mongodb.port,
+                    dbConfig.primary,
+                    new ResponseHandler()
+                )
+            );
         }
 
         Bootstrap.prototype             = ContourBootstrap.prototype;
@@ -11,4 +19,4 @@ module.exports = new Module(
         return Bootstrap;
     }
 )
-.dep("Contour.Core.Bootstrap");
+.dep(["Contour.Core.Bootstrap", "Service.DB.Http.Server", "Service.DB.Http.ResponseHandler"]);
