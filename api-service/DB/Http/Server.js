@@ -83,4 +83,4 @@ module.exports = new Module(
 
         return Server;
     }
-).dep("Contour.Core.Http.AbstractServer", "Contour.Core.Http.Request");
+).dep("Contour.DB.Http.Server", "Contour.Core.Http.Request");
