@@ -22,12 +22,12 @@ module.exports = new Module(
            };
 
            var createResponse = function (result) {
-               return JSON.stringify({data : result});
-           };
+               return this.createResponse(result);
+           }.bind(this);
 
            var createErrorResponse = function (result) {
-               return JSON.stringify({error : result});
-           };
+               return this.createResponse({}, result);
+           }.bind(this);
 
            var responseFunction = function (err, result) {
                if (err) {

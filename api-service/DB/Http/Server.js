@@ -27,9 +27,9 @@ module.exports = new Module(
 
                         connectErr = null;
                         dbHandler  = db;
-                    }
+                    }.bind(this)
                 );
-            };
+            }.bind(this);
 
             mongoConnect();
 
@@ -65,13 +65,12 @@ module.exports = new Module(
 
                             responseHandler.getResponse(dbHandler, Request.parse(body), response);
                         } catch (e) {
-                            console.log("itt");
                             response.end(JSON.stringify({error : e, request : body}));
                         }
                     }
                 );
 
-                response.setTimeout(300, function () {
+                response.setTimeout(1000, function () {
                     response.end(JSON.stringify({error : "Connection timeout!", request : body}));
                     mongoConnect();
                 });
