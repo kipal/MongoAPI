@@ -42,7 +42,7 @@ module.exports = new Module(
 
                 if (connectErr) {
                     mongoConnect();
-                    throw 'Connection interrupted!';
+                    throw 'Database connection interrupted!';
                 }
 
             };
@@ -70,10 +70,17 @@ module.exports = new Module(
                     }
                 );
 
-                response.setTimeout(1000, function () {
-                    response.end(JSON.stringify({error : "Connection timeout!", request : body}));
-                    mongoConnect();
-                });
+                response.setTimeout(
+                    1000,
+                    function () {
+                        if (null !== connectErr) {
+                            response.end(JSON.stringify({error : "Database connection interrupted!", request : body}));
+                        } else {
+                            response.end(JSON.stringify({error : "Connection timeout!", request : body}));
+                        }
+                        mongoConnect();
+                    }
+                );
             };
         }
 
