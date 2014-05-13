@@ -168,7 +168,15 @@ module.exports = new Module(
            };
 
            this.removeCollection = function (dbHandler, param, resp) {
-               dbHandler.db(param.dbName).collection(param.collectionName).drop(responseFunction.bind(resp));
+               dbHandler.db(param.dbName).reIndex(param.collectionName, function (err, result) {
+                   if (err) {
+                       resp.end(createErrorResponse(err));
+
+                       return;
+                   }
+
+                   dbHandler.db(param.dbName).collection(param.collectionName).drop(responseFunction.bind(resp));
+               });
            };
 
         }
