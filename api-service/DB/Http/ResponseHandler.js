@@ -31,7 +31,7 @@ module.exports = new Module(
 
            var responseFunction = function (err, result) {
                if (err) {
-                   this.end(createErrorResponse(result));
+                   this.end(createErrorResponse(err));
                }
 
                this.end(createResponse(result));
