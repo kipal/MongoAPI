@@ -136,7 +136,7 @@ module.exports = new Module(
            this.addDB = function (dbHandler, param, resp) {
                dbHandler.db(param).createCollection(
                    "system.indexes",
-                   {capped:true, size:10000, max:1000, w:1},
+                   {capped:false, size:10000, max:1000, w:1},
                    function (err, r) {
                        if (err) {
                            resp.end(createErrorResponse(err));
